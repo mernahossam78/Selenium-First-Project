@@ -16,29 +16,67 @@ public class ElementActions {
     By password = By.cssSelector("[type = 'password']");
     By loginBtn = RelativeLocator.with(By.tagName("input")).below(password);  //Relative Locator
 
+    By uploadFiles = By.id("myFile");
+    By submitBtn = By.cssSelector("[onclick = 'fileSubmitted()']");
+
+    By p = By.className("traversal-marked-text");
+
+    /*
+    The following lines were code before being polished
+     Stale Element Reference Exception happens when we do the below line
+        WebElement username = driver.findElement(By.id(""));
+        username.sendKeys("");
+         */
+
+    // driver.findElement(username).sendKeys("Merna");
+
+    // driver.findElement(username).sendKeys("admin"); //reallocate the element
+/*
+    findElement(username).sendKeys("admin");
+    findElement(username).clear();
+    findElement(username).sendKeys("standard_user");
+    findElement(password).sendKeys("secret_sauce");
+    findElement(loginBtn).click();
+
+     */
+
     //Test Runner
     @Test
     public void testCase() {
         driver = new EdgeDriver();
         maximize();
         navigateTo("https://www.saucedemo.com/");
-        /* Stale Element Reference Exception happens when we do the below line
-        WebElement username = driver.findElement(By.id(""));
-        username.sendKeys("");
-         */
+        type(username, "standard_user");
+        type(password, "secret_sauce");
+        clicking(loginBtn);
 
-        // driver.findElement(username).sendKeys("Merna");
+    }
 
-        // driver.findElement(username).sendKeys("admin"); //reallocate the element
+    @Test
+    public void uploadFilesTC() {
+        driver = new EdgeDriver();
+        maximize();
+        navigateTo("https://webdriveruniversity.com/File-Upload/index.html");
+        uploadFiles(uploadFiles, "/src/test/resources/test.txt");
 
-        findElement(username).sendKeys("admin");
-        findElement(username).clear();
-        findElement(username).sendKeys("standard_user");
-        findElement(password).sendKeys("secret_sauce");
-        findElement(loginBtn).click();
+    }
+
+    @Test
+    public void getText() {
+        driver = new EdgeDriver();
+        maximize();
+        navigateTo("https://webdriveruniversity.com/Data-Table/index.html");
+        getText(p);
+
     }
 
     //we can use this function instead
+    public String getText(By by) {
+        String text = findElement(by).getText();
+        System.out.println(text);
+        return text;
+    }
+
     public WebElement findElement(By by) {
         return driver.findElement(by);
     }
@@ -49,5 +87,30 @@ public class ElementActions {
 
     public void navigateTo(String url) {
         driver.navigate().to(url);
+    }
+
+    public void clicking(By by) {
+        driver.findElement(by).click();
+    }
+
+    public void clear(By by) {
+        driver.findElement(by).clear();
+    }
+
+    public void type(By by, String text) {
+        clear(by);
+        driver.findElement(by).sendKeys(text);
+    }
+
+    public void submit(By by) {
+        driver.findElement(by).submit();
+    }
+
+    public void uploadFiles(By by, String filePath) {
+        clear(by);
+        String userHome = System.getProperty("user.dir");
+        System.out.println(userHome);
+        findElement(by).sendKeys(userHome + filePath);
+
     }
 }
