@@ -70,6 +70,27 @@ public class ElementActions {
 
     }
 
+    @Test
+    public void shadowDom() {
+        driver = new EdgeDriver();
+        maximize();
+        navigateTo("https://the-internet.herokuapp.com/shadowdom");
+        By shadowHost = By.cssSelector("#content my-paragraph");
+
+        // The slot exists but you need to find the parent p tag first
+        By textLocator = By.cssSelector("p");
+
+        // Get the text
+        String slotText = driver.findElement(shadowHost)
+                .getShadowRoot()
+                .findElement(textLocator)
+                .getText();
+
+        System.out.println("Text found in shadow DOM: " + slotText);
+
+    }
+
+
     //we can use this function instead
     public String getText(By by) {
         String text = findElement(by).getText();
