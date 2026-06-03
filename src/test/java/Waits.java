@@ -1,7 +1,11 @@
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.Test;
 
@@ -9,7 +13,7 @@ import java.time.Duration;
 
 public class Waits {
     WebDriver driver;
-
+    WebDriverWait wait;
     /*
     Implicit Wait: It is a global wait that applies to all elements in the test. It tells the WebDriver to wait for a certain amount of time before throwing a NoSuchElementException if an element is not found. The implicit wait is set once and applies to all subsequent element searches.
 
@@ -18,7 +22,7 @@ public class Waits {
     Fluent Wait: It is similar to explicit wait but provides more flexibility in terms of polling frequency and exception handling. With fluent wait, you can specify how often the WebDriver should check for the condition and which exceptions to ignore while waiting.
 
      */
-    By startBtn = By.tagName("button");
+    By startBtn = By.xpath("//div[@id='start']/button");
     By msg = By.cssSelector("#finish > h4");
 
     /*we are here trying to find the text hello world that is printed after
@@ -65,6 +69,34 @@ public class Waits {
 
         // Here we will use explicit wait to wait until the message is visible
         new WebDriverWait(driver, Duration.ofSeconds(5))
+                .until(d -> driver.findElement(msg).isDisplayed());
+        String message = driver.findElement(msg).getText();
+        System.out.println(message);
+    }
+
+    @Test
+    public void fluentWait() {
+        //Page load strategy
+        EdgeOptions edgeOptions = new EdgeOptions();
+        edgeOptions.setPageLoadStrategy(PageLoadStrategy.NONE);  //don't wait for page load
+        /*In that case it will fail bec i told him do not wait for anything
+        so by default it did not wait for the start btn to load, so we need
+        to handle this by adding a wait before the start btn
+         */
+
+        driver = new EdgeDriver(edgeOptions);
+        wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+
+        driver.manage().window().maximize();
+        driver.get("https://the-internet.herokuapp.com/dynamic_loading/2");
+        wait.until(ExpectedConditions.elementToBeClickable(startBtn));
+        driver.findElement(startBtn).click();
+
+        new FluentWait<>(driver)
+                .withTimeout(Duration.ofSeconds(5))
+                .pollingEvery(Duration.ofMillis(500))
+                .withMessage("Element is not visible, Locator" + msg.toString())
+                .ignoring(NoSuchElementException.class)
                 .until(d -> driver.findElement(msg).isDisplayed());
         String message = driver.findElement(msg).getText();
         System.out.println(message);
