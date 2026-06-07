@@ -81,6 +81,17 @@ public class SeleniumActions {
         driver.findElement(By.id("target")).sendKeys("merna");
     }
 
+    @Test
+    public void scrolling() {
+        driver = new EdgeDriver();
+        driver.manage().window().maximize();
+        driver.get("https://webdriveruniversity.com/Scrolling/index.html");
+        Actions action = new Actions(driver);
+        By scroll = By.id("zone4");
+        action.scrollToElement(driver.findElement(scroll)).perform();
+        //reset();  //without that line, the above action will still be valid
+    }
+
     public void reset() {
         ((RemoteWebDriver) driver).resetInputState();
     }
